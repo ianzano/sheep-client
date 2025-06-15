@@ -10,12 +10,18 @@ CSDiscord::CSDiscord()
 
 	m_DiscordBot->on_message_create([this](const dpp::message_create_t &event) {
 		std::string channelName;
+
+		if(event.msg.author.id == m_DiscordBot->me.id)
+		{
+			return;
+		}
+
 		if(event.msg.channel_id == m_Channel->id)
 		{
 			channelName = m_Channel->name;
 		}
 
-		if(!channelName.empty() && event.msg.author.id != m_DiscordBot->me.id)
+		if(!channelName.empty())
 		{
 			for(auto const &[name, id] : m_Channels)
 			{
@@ -65,19 +71,19 @@ void CSDiscord::OnMapLoad()
 	m_DiscordBot->channel_get(m_ChannelId, [this](const dpp::confirmation_callback_t &event) {
 		if(event.is_error())
 		{
-			log_error("discord", "Error fetching version channel. Reason: %s", event.get_error().message);
+			log_error("discord", "Error fetching version channel. Reason: %s", event.get_error().message.c_str());
 			return;
 		}
 
 		int minVersion = 0;
+		dpp::channel channel = std::get<dpp::channel>(event.value);
 		try
 		{
-			dpp::channel channel = std::get<dpp::channel>(event.value);
 			minVersion = std::stoi(channel.topic);
 		}
 		catch(const std::exception &e)
 		{
-			log_error("discord", "Error parsing version from channel topic. Reason: %s", e.what());
+			log_error("discord", "Error parsing version from channel topic: %s", channel.topic.c_str());
 			return;
 		}
 
@@ -90,7 +96,7 @@ void CSDiscord::OnMapLoad()
 		m_DiscordBot->channels_get(m_GuildId, [this](const dpp::confirmation_callback_t &event) {
 			if(event.is_error())
 			{
-				log_error("discord", "Error fetching all discord channels. Reason: %s", event.get_error().message);
+				log_error("discord", "Error fetching all discord channels. Reason: %s", event.get_error().message.c_str());
 				return;
 			}
 
@@ -123,11 +129,11 @@ void CSDiscord::OnMapLoad()
 							if(!event.is_error())
 							{
 								m_SendMessages = true;
-								log_info("discord", "Updated channel %s topic to: %s", channel.name, Client()->PlayerName());
+								log_info("discord", "Updated channel %s topic to: %s", channel.name.c_str(), Client()->PlayerName());
 							}
 							else
 							{
-								log_info("discord", "Failed to update channel %s topic to: %s. Reason: %s", channel.name, Client()->PlayerName(), event.get_error().message);
+								log_info("discord", "Failed to update channel %s topic to: %s. Reason: %s", channel.name.c_str(), Client()->PlayerName(), event.get_error().message.c_str());
 							}
 						});
 					}
@@ -191,11 +197,11 @@ void CSDiscord::CreateChannel()
 		{
 			m_Channel = new dpp::channel(std::get<dpp::channel>(event.value));
 			m_SendMessages = true;
-			log_info("discord", "Successfully created channel %s", GenerateChannelName());
+			log_info("discord", "Successfully created channel %s", GenerateChannelName().c_str());
 		}
 		else
 		{
-			log_error("discord", "Failed to create channel %s. Reason: %s", GenerateChannelName(), event.get_error().message);
+			log_error("discord", "Failed to create channel %s. Reason: %s", GenerateChannelName().c_str(), event.get_error().message);
 		}
 	});
 }
@@ -215,7 +221,7 @@ void CSDiscord::OnMessage(int Msg, void *pRawMsg)
 	CNetMsg_Sv_Chat *pMsg = (CNetMsg_Sv_Chat *)pRawMsg;
 
 	if(
-		pMsg->m_ClientId == SERVER_MSG ||
+		// pMsg->m_ClientId == SERVER_MSG ||
 		pMsg->m_ClientId == CLIENT_MSG ||
 		pMsg->m_Team == TEAM_WHISPER_SEND ||
 		pMsg->m_Team == TEAM_WHISPER_RECV)
@@ -223,38 +229,52 @@ void CSDiscord::OnMessage(int Msg, void *pRawMsg)
 		return;
 	}
 
-	// bool team = pMsg->m_Team == 1;
-	// bool whisper = pMsg->m_Team >= 2;
-	const auto author = m_pClient->m_aClients[pMsg->m_ClientId];
-	int color = TEAM_ALL;
-
-	if(author.m_Active)
+	char aBuf[1024];
+	if(pMsg->m_ClientId >= 0)
 	{
-		if(author.m_Team == TEAM_SPECTATORS)
+		// bool team = pMsg->m_Team == 1;
+		// bool whisper = pMsg->m_Team >= 2;
+		const auto author = m_pClient->m_aClients[pMsg->m_ClientId];
+		int color = TEAM_ALL;
+
+		if(author.m_Active)
 		{
-			color = TEAM_SPECTATORS;
+			if(author.m_Team == TEAM_SPECTATORS)
+			{
+				color = TEAM_SPECTATORS;
+			}
+
+			if(m_pClient->IsTeamPlay())
+			{
+				if(author.m_Team == TEAM_RED)
+				{
+					color = TEAM_RED;
+				}
+				else if(author.m_Team == TEAM_BLUE)
+				{
+					color = TEAM_BLUE;
+				}
+			}
 		}
 
-		if(m_pClient->IsTeamPlay())
+		if(pMsg->m_Team == 1)
 		{
-			if(author.m_Team == TEAM_RED)
-			{
-				color = TEAM_RED;
-			}
-			else if(author.m_Team == TEAM_BLUE)
-			{
-				color = TEAM_BLUE;
-			}
+			str_format(aBuf, sizeof(aBuf), "__**%s >>> **%s__", author.m_aName, pMsg->m_pMessage);
+		}
+		else
+		{
+			str_format(aBuf, sizeof(aBuf), "**%s > **%s", author.m_aName, pMsg->m_pMessage);
 		}
 	}
-
-	char aBuf[1024];
-	str_format(aBuf, sizeof(aBuf), "%s > %s", author.m_aName, pMsg->m_pMessage);
+	else
+	{
+		str_format(aBuf, sizeof(aBuf), "__*%s*__", pMsg->m_pMessage);
+	}
 
 	m_DiscordBot->message_create(dpp::message(m_Channel->id, aBuf), [this](const dpp::confirmation_callback_t &event) {
 		if(event.is_error())
 		{
-			log_error("discord", "Failed to transmit message. Reason: %s", event.get_error().message);
+			log_error("discord", "Failed to transmit message. Reason: %s", event.get_error().message.c_str());
 		}
 	});
 }
@@ -274,7 +294,7 @@ void CSDiscord::UpdateName()
 		}
 		else
 		{
-			log_error("discord", "Failed to update channel topic. Reason: %s", event.get_error().message);
+			log_error("discord", "Failed to update channel topic. Reason: %s", event.get_error().message.c_str());
 		}
 	});
 }
@@ -294,7 +314,7 @@ void CSDiscord::LeaveChannel()
 		}
 		else
 		{
-			log_error("discord", "Failed to clear channel topic. Reason: %s", event.get_error().message);
+			log_error("discord", "Failed to clear channel topic. Reason: %s", event.get_error().message.c_str());
 		}
 	});
 	m_SendMessages = false;

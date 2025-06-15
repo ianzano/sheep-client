@@ -32,10 +32,9 @@ public:
 	int Sizeof() const override { return sizeof(*this); }
 
 private:
-	std::string m_Token = "MTM3Nzg4ODQ3MjM0NTM0NjE1OA.GKnPuU.Zg9Rm2td-B9Holfc6PEka6WQp19u6k9dBJjhQY";
+	std::string m_Token = "";
 	dpp::snowflake m_GuildId = dpp::snowflake("1377380381908533439");
 	dpp::snowflake m_CategoryId = dpp::snowflake("1383359347094192148");
-	dpp::snowflake m_BotId = dpp::snowflake("1377888472345346158");
 	dpp::snowflake m_ChannelId = dpp::snowflake("1383527961239752837");
 
 	std::map<std::string, dpp::snowflake> m_Channels = {
