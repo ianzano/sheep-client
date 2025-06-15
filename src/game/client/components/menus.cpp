@@ -2206,6 +2206,7 @@ void CMenus::SetActive(bool Active)
 		if(m_NeedSendinfo)
 		{
 			m_pClient->SendInfo(false);
+			GameClient()->m_Discord.UpdateName();
 			m_NeedSendinfo = false;
 		}
 

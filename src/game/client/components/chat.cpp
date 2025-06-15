@@ -702,6 +702,8 @@ void CChat::AddLine(int ClientId, int Team, const char *pLine)
 				ChatLogColor = color_cast<ColorRGBA>(ColorHSLA(g_Config.m_ClMessageTeamColor));
 			else if(Line.m_ClientId == SERVER_MSG)
 				ChatLogColor = color_cast<ColorRGBA>(ColorHSLA(g_Config.m_ClMessageSystemColor));
+			else if(Line.m_ClientId == DISCORD_MSG)
+				ChatLogColor = color_cast<ColorRGBA>(ColorHSLA(g_Config.m_ClMessageDiscordColor));
 			else if(Line.m_ClientId == CLIENT_MSG)
 				ChatLogColor = color_cast<ColorRGBA>(ColorHSLA(g_Config.m_ClMessageClientColor));
 			else // regular message
@@ -715,6 +717,8 @@ void CChat::AddLine(int ClientId, int Team, const char *pLine)
 			pFrom = "chat/team";
 		else if(Line.m_ClientId == SERVER_MSG)
 			pFrom = "chat/server";
+		else if(Line.m_ClientId == DISCORD_MSG)
+			pFrom = "chat/discord";
 		else if(Line.m_ClientId == CLIENT_MSG)
 			pFrom = "chat/client";
 		else
@@ -790,6 +794,11 @@ void CChat::AddLine(int ClientId, int Team, const char *pLine)
 	else if(CurrentLine.m_ClientId == CLIENT_MSG)
 	{
 		str_copy(CurrentLine.m_aName, "— ");
+	}
+	else if(CurrentLine.m_ClientId == DISCORD_MSG)
+	{
+		str_copy(CurrentLine.m_aName, "");
+		CurrentLine.m_NameColor = TEAM_SPECTATORS;
 	}
 	else
 	{
@@ -1052,6 +1061,8 @@ void CChat::OnPrepareLines(float y)
 			NameColor = color_cast<ColorRGBA>(ColorHSLA(g_Config.m_ClMessageSystemColor));
 		else if(Line.m_ClientId == CLIENT_MSG)
 			NameColor = color_cast<ColorRGBA>(ColorHSLA(g_Config.m_ClMessageClientColor));
+		else if(Line.m_ClientId == DISCORD_MSG)
+			NameColor = color_cast<ColorRGBA>(ColorHSLA(g_Config.m_ClMessageDiscordColor));
 		else if(Line.m_Team)
 			NameColor = CalculateNameColor(ColorHSLA(g_Config.m_ClMessageTeamColor));
 		else if(Line.m_NameColor == TEAM_RED)
@@ -1086,6 +1097,8 @@ void CChat::OnPrepareLines(float y)
 			Color = *Line.m_CustomColor;
 		else if(Line.m_ClientId == SERVER_MSG)
 			Color = color_cast<ColorRGBA>(ColorHSLA(g_Config.m_ClMessageSystemColor));
+		else if(Line.m_ClientId == DISCORD_MSG)
+			Color = color_cast<ColorRGBA>(ColorHSLA(g_Config.m_ClMessageDiscordColor));
 		else if(Line.m_ClientId == CLIENT_MSG)
 			Color = color_cast<ColorRGBA>(ColorHSLA(g_Config.m_ClMessageClientColor));
 		else if(Line.m_Highlighted)

@@ -324,6 +324,7 @@ private:
 	// Font faces
 	FT_Face m_DefaultFace = nullptr;
 	FT_Face m_IconFace = nullptr;
+	FT_Face m_EmojiFace = nullptr;
 	FT_Face m_VariantFace = nullptr;
 	FT_Face m_SelectedFace = nullptr;
 	std::vector<FT_Face> m_vFallbackFaces;
@@ -402,7 +403,7 @@ private:
 
 	FT_UInt GetCharGlyph(int Chr, FT_Face *pFace, bool AllowReplacementCharacter)
 	{
-		for(FT_Face Face : {m_SelectedFace, m_DefaultFace, m_VariantFace})
+		for(FT_Face Face : {m_SelectedFace, m_DefaultFace, m_VariantFace, m_IconFace, m_EmojiFace})
 		{
 			if(Face && Face->charmap)
 			{
@@ -614,6 +615,11 @@ public:
 		return m_IconFace;
 	}
 
+	FT_Face EmojiFace() const
+	{
+		return m_EmojiFace;
+	}
+
 	void AddFace(FT_Face Face)
 	{
 		m_vFtFaces.push_back(Face);
@@ -640,6 +646,17 @@ public:
 		if(!m_IconFace)
 		{
 			log_error("textrender", "The icon font face '%s' could not be found", pFamilyName);
+			return false;
+		}
+		return true;
+	}
+
+	bool SetEmojiFaceByName(const char *pFamilyName)
+	{
+		m_EmojiFace = GetFaceByName(pFamilyName);
+		if(!m_EmojiFace)
+		{
+			log_error("textrender", "The emoji font face '%s' could not be found", pFamilyName);
 			return false;
 		}
 		return true;
@@ -712,6 +729,7 @@ public:
 		FT_UInt GlyphIndex = GetCharGlyph(Chr, &Face, false);
 		if(GlyphIndex == 0)
 		{
+			log_error("textrender", "Default font has no glyph for %d, so using %d.", Chr, REPLACEMENT_CHARACTER);
 			// Use replacement character if glyph could not be found,
 			// also retrieve replacement character from the atlas.
 			return Chr == REPLACEMENT_CHARACTER ? nullptr : GetGlyph(REPLACEMENT_CHARACTER, FontSize);
@@ -1303,6 +1321,21 @@ public:
 		else
 		{
 			log_error("textrender", "Font index malformed: 'icon' must be a string");
+			Success = false;
+		}
+
+		// extract icon font family name
+		const json_value &EmojiFace = (*pJsonData)["emoji"];
+		if(EmojiFace.type == json_string)
+		{
+			if(!m_pGlyphMap->SetEmojiFaceByName(EmojiFace.u.string.ptr))
+			{
+				Success = false;
+			}
+		}
+		else
+		{
+			log_error("textrender", "Font index malformed: 'emoji' must be a string");
 			Success = false;
 		}
 

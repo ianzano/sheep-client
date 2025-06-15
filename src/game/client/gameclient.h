@@ -64,6 +64,8 @@
 
 #include <vector>
 
+#include "components/sheep/discord.h"
+
 class CGameInfo
 {
 public:
@@ -173,6 +175,9 @@ public:
 	CGhost m_Ghost;
 
 	CTooltips m_Tooltips;
+
+	// sheep
+	CSDiscord m_Discord;
 
 private:
 	std::vector<class CComponent *> m_vpAll;

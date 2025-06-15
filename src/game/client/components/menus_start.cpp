@@ -190,6 +190,20 @@ void CMenus::RenderStartMenu(CUIRect MainView)
 	ConsoleButton.VSplitRight(40.0f, nullptr, &ConsoleButton);
 	Ui()->DoLabel(&CurVersion, GAME_RELEASE_VERSION, 14.0f, TEXTALIGN_MR);
 
+	CUIRect ClientVersion;
+	MainView.HSplitTop(15.0f, &ClientVersion, nullptr);
+	MainView.HSplitTop(25.0f, &ClientVersion, nullptr);
+	ClientVersion.VSplitRight(5.0f, &ClientVersion, nullptr);
+	ClientVersion.VSplitRight(100.0f, &ClientVersion, &ClientVersion);
+	static CButtonContainer s_AClient;
+
+	char clientVersionString[64];
+	sprintf(clientVersionString, "Sheep Client v%s", GameClient()->m_Discord.m_ReleaseVersion);
+	if(DoButton_Menu(&s_AClient, clientVersionString, 0, &ClientVersion, BUTTONFLAG_ALL, nullptr, IGraphics::CORNER_ALL, 5, 0.5f, ColorRGBA(0.0f, 0.0f, 0.0f, 0.25f)))
+	{
+		// NewPage = PAGE_ECLIENT;
+	}
+
 	static CButtonContainer s_ConsoleButton;
 	TextRender()->SetFontPreset(EFontPreset::ICON_FONT);
 	TextRender()->SetRenderFlags(ETextRenderFlags::TEXT_RENDER_FLAG_ONLY_ADVANCE_WIDTH | ETextRenderFlags::TEXT_RENDER_FLAG_NO_X_BEARING | ETextRenderFlags::TEXT_RENDER_FLAG_NO_Y_BEARING | ETextRenderFlags::TEXT_RENDER_FLAG_NO_PIXEL_ALIGNMENT | ETextRenderFlags::TEXT_RENDER_FLAG_NO_OVERSIZE);

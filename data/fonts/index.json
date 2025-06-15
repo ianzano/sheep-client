@@ -3,7 +3,8 @@
         "DejaVuSans.ttf",
         "Font_Awesome_6_Free-Solid-900.otf",
         "GlowSansJ-Compressed-Book.otf",
-        "SourceHanSans.ttc"
+        "SourceHanSans.ttc",
+        "NotoEmoji-VariableFont_wght.ttf"
     ],
     "default": "DejaVu Sans",
     "language variants": {
@@ -15,5 +16,6 @@
     "fallbacks": [
         "Source Han Sans"
     ],
-    "icon": "Font Awesome 6 Free"
+    "icon": "Font Awesome 6 Free",
+    "emoji": "Noto Emoji"
 }

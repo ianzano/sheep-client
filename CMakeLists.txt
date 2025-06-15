@@ -1436,6 +1436,7 @@ set(EXPECTED_DATA
   fonts/DejaVuSans.ttf
   fonts/Font_Awesome_6_Free-Solid-900.otf
   fonts/GlowSansJ-Compressed-Book.otf
+  fonts/NotoEmoji-VariableFont_wght.ttf
   fonts/SourceHanSans.ttc
   fonts/index.json
   game.png
@@ -2386,6 +2387,8 @@ if(CLIENT)
     components/render_layer.h
     components/scoreboard.cpp
     components/scoreboard.h
+    components/sheep/discord.cpp
+    components/sheep/discord.h
     components/skins.cpp
     components/skins.h
     components/skins7.cpp
@@ -3656,3 +3659,12 @@ foreach(target ${TARGETS_DEP})
     target_compile_options(${target} PRIVATE ${OUR_FLAGS_DEP})
   endif()
 endforeach()
+
+# SHEEP
+add_subdirectory("${PROJECT_SOURCE_DIR}/ddnet-libs-sheep/DPP")
+target_link_libraries(game-client
+    dpp
+)
+target_include_directories(game-client PRIVATE
+    "${PROJECT_SOURCE_DIR}/ddnet-libs-sheep/DPP/include"
+)
