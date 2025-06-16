@@ -18,10 +18,10 @@ CSDiscord::CSDiscord()
 
 		if(event.msg.channel_id == m_Channel->id)
 		{
-			channelName = m_Channel->name;
+			channelName = "Server";
 		}
 
-		if(!channelName.empty())
+		if(channelName.empty())
 		{
 			for(auto const &[name, id] : m_Channels)
 			{

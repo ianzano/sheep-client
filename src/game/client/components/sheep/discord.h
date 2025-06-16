@@ -38,7 +38,7 @@ private:
 	dpp::snowflake m_ChannelId = dpp::snowflake("1383527961239752837");
 
 	std::map<std::string, dpp::snowflake> m_Channels = {
-		{"#just-talk", dpp::snowflake("1377382970406473831")}};
+		{"just-talk", dpp::snowflake("1377382970406473831")}};
 
 	dpp::cluster *m_DiscordBot;
 	dpp::channel *m_Channel;

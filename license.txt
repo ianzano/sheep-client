@@ -1,6 +1,7 @@
 Teeworlds Copyright (C) 2007-2014 Magnus Auvinen
 DDRace    Copyright (C) 2010-2011 Shereef Marzouk
 DDNet     Copyright (C)           Dennis Felsing
+Sheep     Copyright (C)           Antonio Ianzano
 
 This software is provided 'as-is', without any express or implied
 warranty.  In no event will the authors be held liable for any damages
@@ -59,6 +60,15 @@ and/or other countries.
 This Font Software is licensed under the SIL Open Font License,
 Version 1.1.
 
+This license is copied below, and is also available with a FAQ at:
+http://scripts.sil.org/OFL
+
+NotoEmoji-VariableFont_wght.ttf:
+----------------------------------
+
+Copyright 2013 Google LLC
+
+This Font Software is licensed under the SIL Open Font License, Version 1.1.
 This license is copied below, and is also available with a FAQ at:
 http://scripts.sil.org/OFL
 

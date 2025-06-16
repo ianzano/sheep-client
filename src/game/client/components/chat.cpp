@@ -797,8 +797,10 @@ void CChat::AddLine(int ClientId, int Team, const char *pLine)
 	}
 	else if(CurrentLine.m_ClientId == DISCORD_MSG)
 	{
-		str_copy(CurrentLine.m_aName, "");
-		CurrentLine.m_NameColor = TEAM_SPECTATORS;
+		std::string line = std::string(pLine);
+		std::string username = line.substr(0, line.find(":"));
+		str_copy(CurrentLine.m_aName, username.c_str());
+		str_copy(CurrentLine.m_aText, line.substr(line.find(":")).c_str());
 	}
 	else
 	{
@@ -1097,8 +1099,8 @@ void CChat::OnPrepareLines(float y)
 			Color = *Line.m_CustomColor;
 		else if(Line.m_ClientId == SERVER_MSG)
 			Color = color_cast<ColorRGBA>(ColorHSLA(g_Config.m_ClMessageSystemColor));
-		else if(Line.m_ClientId == DISCORD_MSG)
-			Color = color_cast<ColorRGBA>(ColorHSLA(g_Config.m_ClMessageDiscordColor));
+		// else if(Line.m_ClientId == DISCORD_MSG)
+		// 	Color = color_cast<ColorRGBA>(ColorHSLA(g_Config.m_ClMessageDiscordColor));
 		else if(Line.m_ClientId == CLIENT_MSG)
 			Color = color_cast<ColorRGBA>(ColorHSLA(g_Config.m_ClMessageClientColor));
 		else if(Line.m_Highlighted)
