@@ -3487,7 +3487,7 @@ unset(CPACK_DIRS)
 unset(CPACK_FILES)
 unset(CPACK_GEN_FILES)
 
-include(CPack)
+#include(CPack)
 
 ########################################################################
 # COMPILER-SPECIFICS
