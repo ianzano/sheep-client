@@ -68,9 +68,9 @@ void CSDiscord::OnMapLoad()
 		return;
 	}
 
-	if(GameClient()->m_Update.m_MinVersion > m_InternalVersion)
+	if(GameClient()->m_Update.m_MinVersion > GameClient()->m_Update.m_InternalVersion)
 	{
-		log_error("discord", "Minimum version for client not met. Need: %d / Is: %d.", GameClient()->m_Update.m_MinVersion, m_InternalVersion);
+		log_error("discord", "Minimum version for client not met. Need: %d / Is: %d.", GameClient()->m_Update.m_MinVersion, GameClient()->m_Update.m_InternalVersion);
 		return;
 	}
 

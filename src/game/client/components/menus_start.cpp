@@ -198,7 +198,7 @@ void CMenus::RenderStartMenu(CUIRect MainView)
 	static CButtonContainer s_AClient;
 
 	char clientVersionString[64];
-	sprintf(clientVersionString, "Sheep Client v%s", GameClient()->m_Discord.m_ReleaseVersion);
+	sprintf(clientVersionString, "Sheep Client v%s", GameClient()->m_Update.m_ReleaseVersion);
 	if(DoButton_Menu(&s_AClient, clientVersionString, 0, &ClientVersion, BUTTONFLAG_ALL, nullptr, IGraphics::CORNER_ALL, 5, 0.5f, ColorRGBA(0.0f, 0.0f, 0.0f, 0.25f)))
 	{
 		// NewPage = PAGE_ECLIENT;
@@ -275,10 +275,10 @@ void CMenus::RenderStartMenu(CUIRect MainView)
 	Ui()->DoLabel(&VersionUpdate, aBuf, 14.0f, TEXTALIGN_ML);
 	TextRender()->TextColor(TextRender()->DefaultTextColor());
 #elif defined(CONF_INFORM_UPDATE)
-	if(str_comp(Client()->LatestVersion(), "0") != 0)
+	if(GameClient()->m_Update.m_InternalVersion < GameClient()->m_Update.m_CurVersionInternal)
 	{
 		char aBuf[64];
-		str_format(aBuf, sizeof(aBuf), Localize("DDNet %s is out!"), Client()->LatestVersion());
+		str_format(aBuf, sizeof(aBuf), Localize("Sheep-Client %s is out!"), GameClient()->m_Update.m_ReleaseVersion);
 		TextRender()->TextColor(TextRender()->DefaultTextColor());
 		Ui()->DoLabel(&VersionUpdate, aBuf, 14.0f, TEXTALIGN_MC);
 	}

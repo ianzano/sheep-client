@@ -10,14 +10,19 @@ class CUpdate : public CComponent
     static constexpr const char *m_VersionUrl = "https://raw.githubusercontent.com/ianzano/sheep-client/refs/heads/master/version.json";
     
 public:
+    // this client
+	const char *m_ReleaseVersion = "1.0.1_alpha";
+	const int m_InternalVersion = 1000000;
+
+    // the server
     int m_MinVersion = 0;
     int m_CurVersionInternal = 0;
     char m_CurVersion[16] = "unbekannt";
 
 	std::shared_ptr<CHttpRequest> m_RequestTask = nullptr;
-    
+
 	void FetchClientInfo();
-	void HandleClientInfo(json_value pJson);
+	void HandleClientInfo(json_value &pJson);
 
 	virtual void OnInit() override;
 	virtual void OnRender() override;
