@@ -44,6 +44,6 @@ void CUpdate::HandleClientInfo(json_value &pJson)
 	if (pJson["curVersion"].type == json_string) {
 		str_copy(m_CurVersion, pJson["curVersion"]);
 	}
-	m_CurVersionInternal = pJson["m_CurVersionInternal"].type == json_integer ? json_int_get(&pJson["m_CurVersionInternal"]) : 0;
+	m_CurVersionInternal = pJson["curVersionInternal"].type == json_integer ? json_int_get(&pJson["curVersionInternal"]) : 0;
 	log_info("update", "Current version: %s, Min version: %d, Internal version: %d", m_CurVersion, m_MinVersion, m_CurVersionInternal);
 }

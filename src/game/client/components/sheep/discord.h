@@ -13,9 +13,6 @@
 class CSDiscord : public CComponent
 {
 public:
-	const char *m_ReleaseVersion = "1.0.0_alpha";
-	const int m_InternalVersion = 1000000;
-
 	void OnInit() override;
 	void OnMapLoad() override;
 	void OnShutdown() override;

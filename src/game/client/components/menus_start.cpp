@@ -278,7 +278,7 @@ void CMenus::RenderStartMenu(CUIRect MainView)
 	if(GameClient()->m_Update.m_InternalVersion < GameClient()->m_Update.m_CurVersionInternal)
 	{
 		char aBuf[64];
-		str_format(aBuf, sizeof(aBuf), Localize("Sheep-Client %s is out!"), GameClient()->m_Update.m_ReleaseVersion);
+		str_format(aBuf, sizeof(aBuf), Localize("Sheep-Client %s is out!"), GameClient()->m_Update.m_CurVersion);
 		TextRender()->TextColor(TextRender()->DefaultTextColor());
 		Ui()->DoLabel(&VersionUpdate, aBuf, 14.0f, TEXTALIGN_MC);
 	}
