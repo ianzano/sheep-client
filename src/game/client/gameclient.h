@@ -64,6 +64,7 @@
 
 #include <vector>
 
+#include "components/sheep/update.h"
 #include "components/sheep/discord.h"
 
 class CGameInfo
@@ -177,6 +178,7 @@ public:
 	CTooltips m_Tooltips;
 
 	// sheep
+	CUpdate m_Update;
 	CSDiscord m_Discord;
 
 private:

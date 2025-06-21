@@ -729,7 +729,6 @@ public:
 		FT_UInt GlyphIndex = GetCharGlyph(Chr, &Face, false);
 		if(GlyphIndex == 0)
 		{
-			log_error("textrender", "Default font has no glyph for %d, so using %d.", Chr, REPLACEMENT_CHARACTER);
 			// Use replacement character if glyph could not be found,
 			// also retrieve replacement character from the atlas.
 			return Chr == REPLACEMENT_CHARACTER ? nullptr : GetGlyph(REPLACEMENT_CHARACTER, FontSize);

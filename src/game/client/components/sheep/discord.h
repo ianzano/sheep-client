@@ -13,17 +13,18 @@
 class CSDiscord : public CComponent
 {
 public:
-	const char *m_ReleaseVersion = "1.00.0000";
+	const char *m_ReleaseVersion = "1.0.0_alpha";
 	const int m_InternalVersion = 1000000;
 
-	CSDiscord();
-
+	void OnInit() override;
 	void OnMapLoad() override;
 	void OnShutdown() override;
 	void OnReset() override;
 	void OnMessage(int Msg, void *pRawMsg) override;
-
+	
 	void UpdateName();
+	
+	void ReadFile(const char* pFilename);
 
 	void LeaveChannel();
 	void CreateChannel();
@@ -38,7 +39,8 @@ private:
 	dpp::snowflake m_ChannelId = dpp::snowflake("1383527961239752837");
 
 	std::map<std::string, dpp::snowflake> m_Channels = {
-		{"just-talk", dpp::snowflake("1377382970406473831")}};
+		{"just-talk", dpp::snowflake("1377382970406473831")}
+	};
 
 	dpp::cluster *m_DiscordBot;
 	dpp::channel *m_Channel;

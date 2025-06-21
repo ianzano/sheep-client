@@ -3,7 +3,7 @@
 #include "discord.h"
 #include <base/log.h>
 
-CSDiscord::CSDiscord()
+void CSDiscord::OnInit()
 {
 	m_DiscordBot = new dpp::cluster(m_Token, dpp::i_default_intents | dpp::i_message_content);
 	m_DiscordBot->start(dpp::st_return);
@@ -68,85 +68,64 @@ void CSDiscord::OnMapLoad()
 		return;
 	}
 
-	m_DiscordBot->channel_get(m_ChannelId, [this](const dpp::confirmation_callback_t &event) {
+	if(GameClient()->m_Update.m_MinVersion > m_InternalVersion)
+	{
+		log_error("discord", "Minimum version for client not met. Need: %d / Is: %d.", GameClient()->m_Update.m_MinVersion, m_InternalVersion);
+		return;
+	}
+
+	m_DiscordBot->channels_get(m_GuildId, [this](const dpp::confirmation_callback_t &event) {
 		if(event.is_error())
 		{
-			log_error("discord", "Error fetching version channel. Reason: %s", event.get_error().message.c_str());
+			log_error("discord", "Error fetching all discord channels. Reason: %s", event.get_error().message.c_str());
 			return;
 		}
 
-		int minVersion = 0;
-		dpp::channel channel = std::get<dpp::channel>(event.value);
-		try
-		{
-			minVersion = std::stoi(channel.topic);
-		}
-		catch(const std::exception &e)
-		{
-			log_error("discord", "Error parsing version from channel topic: %s", channel.topic.c_str());
-			return;
-		}
+		dpp::channel_map map = std::get<dpp::channel_map>(event.value);
 
-		if(minVersion > m_InternalVersion)
+		for(const std::pair<const dpp::snowflake, dpp::channel> &pair : map)
 		{
-			log_error("discord", "Minimum version for client not met. Need: %d / Is: %d.", minVersion, m_InternalVersion);
-			return;
-		}
+			dpp::channel channel = pair.second;
 
-		m_DiscordBot->channels_get(m_GuildId, [this](const dpp::confirmation_callback_t &event) {
-			if(event.is_error())
+			// TODO: read channel names from here and put them into m_Channels instead of hard-coding
+
+			if(channel.parent_id != m_CategoryId)
 			{
-				log_error("discord", "Error fetching all discord channels. Reason: %s", event.get_error().message.c_str());
+				continue;
+			}
+
+			if(channel.name == GenerateChannelName())
+			{
+				m_Channel = new dpp::channel(channel);
+
+				if(channel.topic == Client()->PlayerName())
+				{
+					m_SendMessages = true;
+				}
+				else if(!IsPlayerOnline(channel.topic))
+				{
+					channel.set_topic(std::string(Client()->PlayerName()));
+					m_DiscordBot->channel_edit(channel, [this, &channel](const dpp::confirmation_callback_t &event) {
+						if(!event.is_error())
+						{
+							m_SendMessages = true;
+							log_info("discord", "Updated channel %s topic to: %s", channel.name.c_str(), Client()->PlayerName());
+						}
+						else
+						{
+							log_info("discord", "Failed to update channel %s topic to: %s. Reason: %s", channel.name.c_str(), Client()->PlayerName(), event.get_error().message.c_str());
+						}
+					});
+				}
+
 				return;
 			}
+		}
 
-			dpp::channel_map map = std::get<dpp::channel_map>(event.value);
-
-			for(const std::pair<const dpp::snowflake, dpp::channel> &pair : map)
-			{
-				dpp::channel channel = pair.second;
-
-				// TODO: read channel names from here and put them into m_Channels instead of hard-coding
-
-				if(channel.parent_id != m_CategoryId)
-				{
-					continue;
-				}
-
-				if(channel.name == GenerateChannelName())
-				{
-					m_Channel = new dpp::channel(channel);
-
-					if(channel.topic == Client()->PlayerName())
-					{
-						m_SendMessages = true;
-					}
-					else if(!IsPlayerOnline(channel.topic))
-					{
-						// get channel statt den hier nutzen?
-						channel.set_topic(std::string(Client()->PlayerName()));
-						m_DiscordBot->channel_edit(channel, [this, &channel](const dpp::confirmation_callback_t &event) {
-							if(!event.is_error())
-							{
-								m_SendMessages = true;
-								log_info("discord", "Updated channel %s topic to: %s", channel.name.c_str(), Client()->PlayerName());
-							}
-							else
-							{
-								log_info("discord", "Failed to update channel %s topic to: %s. Reason: %s", channel.name.c_str(), Client()->PlayerName(), event.get_error().message.c_str());
-							}
-						});
-					}
-
-					return;
-				}
-			}
-
-			if(!m_Channel)
-			{
-				CreateChannel();
-			}
-		});
+		if(!m_Channel)
+		{
+			CreateChannel();
+		}
 	});
 }
 

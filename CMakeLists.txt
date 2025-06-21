@@ -2389,6 +2389,8 @@ if(CLIENT)
     components/scoreboard.h
     components/sheep/discord.cpp
     components/sheep/discord.h
+    components/sheep/update.cpp
+    components/sheep/update.h
     components/skins.cpp
     components/skins.h
     components/skins7.cpp
